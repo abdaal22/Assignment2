@@ -1,0 +1,96 @@
+package stepDefs;
+
+import io.cucumber.java.en.*;
+import org.junit.Assert;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import pages.RegistrationPage;
+
+import java.util.concurrent.TimeUnit;
+
+public class RegisterUserStepDefs {
+    WebDriver driver;
+    RegistrationPage registrationPage;
+
+    @Given("I am on the registration page using {string}")
+    public void i_am_on_the_registration_page_using(String browser) {
+        switch (browser.toLowerCase()) {
+            case "firefox":
+                WebDriverManager.firefoxdriver().setup();
+                driver = new FirefoxDriver();
+                break;
+                default:
+                throw new IllegalArgumentException("Unsupported browser: " + browser);
+        }
+
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
+        driver.get("https://membership.basketballengland.co.uk/NewSupporterAccount");
+        registrationPage = new RegistrationPage(driver);
+    }
+
+    @When("I enter valid registration details")
+    public void i_enter_valid_registration_details() {
+        registrationPage.enterFirstName("John");
+        registrationPage.enterLastName("Doe");
+        registrationPage.enterEmail("johndoe@example.com");
+        registrationPage.enterPassword("Password123", "Password123");
+        registrationPage.acceptTerms();
+
+    }
+
+    @When("I enter valid details except last name")
+    public void i_enter_valid_details_except_last_name() {
+        registrationPage.enterFirstName("John");
+        registrationPage.enterEmail("johndoe@example.com");
+        registrationPage.enterPassword("Password123", "Password123");
+        registrationPage.acceptTerms();
+    }
+
+    @When("I enter mismatching passwords")
+    public void i_enter_mismatching_passwords() {
+        registrationPage.enterFirstName("John");
+        registrationPage.enterLastName("Doe");
+        registrationPage.enterEmail("johndoe@example.com");
+        registrationPage.enterPassword("Password123", "WrongPassword");
+        registrationPage.acceptTerms();
+    }
+
+    @When("I enter valid details but do not accept terms")
+    public void i_enter_valid_details_but_do_not_accept_terms() {
+        registrationPage.enterFirstName("John");
+        registrationPage.enterLastName("Doe");
+        registrationPage.enterEmail("johndoe@example.com");
+        registrationPage.enterPassword("Password123", "Password123");
+    }
+
+    @And("I submit the form")
+    public void i_submit_the_form() {
+        registrationPage.clickRegister();
+    }
+
+    @Then("I should see a confirmation message")
+    public void i_should_see_a_confirmation_message() {
+        Assert.assertTrue(registrationPage.isConfirmationDisplayed());
+        driver.quit();
+    }
+
+    @Then("I should see an error message about the last name")
+    public void i_should_see_an_error_message_about_the_last_name() {
+        Assert.assertTrue(driver.getPageSource().contains("Last name is required"));
+        driver.quit();
+    }
+
+    @Then("I should see an error message about password mismatch")
+    public void i_should_see_an_error_message_about_password_mismatch() {
+        Assert.assertTrue(driver.getPageSource().contains("Passwords do not match"));
+        driver.quit();
+    }
+
+    @Then("I should see an error message about terms and conditions")
+    public void i_should_see_an_error_message_about_terms_and_conditions() {
+        Assert.assertTrue(driver.getPageSource().contains("must accept terms"));
+        driver.quit();
+    }
+}
