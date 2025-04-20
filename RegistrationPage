@@ -1,0 +1,57 @@
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+public class RegistrationPage {
+    WebDriver driver;
+
+    public RegistrationPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void enterFirstName(String firstName) {
+        WebElement firstNameInput = driver.findElement(By.id("member_firstname"));
+        firstNameInput.sendKeys(firstName);
+    }
+
+    public void enterLastName(String lastName) {
+        WebElement lastNameInput = driver.findElement(By.id("member_lastname"));
+        lastNameInput.sendKeys(lastName);
+    }
+    public String getLastNameErrorMessage() {
+        return driver.findElement(By.id("member_lastname-error")).getText();
+    }
+
+    public String getPasswordMismatchErrorMessage() {
+        return driver.findElement(By.id("signupunlicenced_confirmPassword-error")).getText();
+    }
+
+    public String getTermsErrorMessage() {
+        return driver.findElement(By.id("termsCheckbox-error")).getText();
+    }
+
+    public void enterEmail(String email) {
+        WebElement emailInput = driver.findElement(By.id("member_email"));
+        emailInput.sendKeys(email);
+    }
+
+    public void enterPassword(String password, String confirmPassword) {
+        driver.findElement(By.id("signupunlicenced_password")).sendKeys(password);
+        driver.findElement(By.id("signupunlicenced_confirmPassword")).sendKeys(confirmPassword);
+    }
+
+    public void acceptTerms() {
+        driver.findElement(By.id("termsCheckbox")).click();
+    }
+
+    public void clickRegister() {
+        driver.findElement(By.id("registerButton")).click();
+    }
+
+    public boolean isConfirmationDisplayed() {
+        WebElement confirmationMessage = driver.findElement(By.id("confirmationMessage"));
+        return confirmationMessage.isDisplayed();
+    }
+}
